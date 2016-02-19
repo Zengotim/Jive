@@ -199,7 +199,7 @@ public class tkkDataMod {
         }
 
         protected void onProgressUpdate(Integer... progress){
-            //TODO: make progress tint bar across image
+
         }
 
         protected void onPostExecute(Integer result){
