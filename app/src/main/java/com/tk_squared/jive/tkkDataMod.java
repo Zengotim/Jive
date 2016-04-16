@@ -9,11 +9,15 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -56,6 +60,9 @@ public class tkkDataMod {
         Boolean update = false;
         ArrayList<JSONObject> jsons;
 
+        Bitmap defaultIcon;
+        JSONArray ja;
+
         public GetServerDataTask(){
             this.jsons = new ArrayList<>();
         }
@@ -71,35 +78,43 @@ public class tkkDataMod {
             System.out.println(stations.size());
 
             try {
-                URL url = new URL(_activity.getString(R.string.stations_list_url));
-                URLConnection con = url.openConnection();
-                File vFile = new File(_activity.getApplicationContext().getFilesDir(),_activity.getString(R.string.server_list_version));
-                long remoteModified = con.getLastModified();
-                long localModified = vFile.lastModified();
-                update = (remoteModified > localModified);
-
+                // URL url = new URL(_activity.getString(R.string.stations_list_url));
+                defaultIcon=BitmapFactory.decodeResource(_activity.getApplicationContext()
+                        .getResources(), R.drawable.ic_launcher);
+                File vFile = new File(_activity.getApplicationContext().getFilesDir(), "stations.json");
                 if(!update) {
-                    if (!vFile.exists()) {
-                        if (vFile.createNewFile()){
-                            //updateListVersion(vFile, serverListVersion);
-                            update = true;
-                        }
-                    }
-                }
+                    URL url = new URL("http://tk-squared.com/Jive/stations_.json");
+                    URLConnection con = url.openConnection();
 
-                if(update) {
-                    Log.i("tkkDataMod", "Newer server file, downloading to local!");
+
                     InputStream in = con.getInputStream();
-                    this.body = fileReader(in);
-                    String[] lines = this.body.split("~#%#~");
-                    this.body = lines[1];
+                    this.body = streamReader(in);
 
-                    lines = this.body.split("~~@~~");
-                    tasks = lines.length;
-                    for (String s : lines) {
-                        jsons.add(new JSONObject(s));
+                    this.ja = new JSONArray(this.body);
+
+                    tasks = ja.length();
+                    //createStationsJSON(lines, vFile);
+
+                    if (!vFile.exists()) {
+                        if (vFile.createNewFile()) {
+                            Log.i("#STATIONSJSON#", "Need to create local stations.json");
+                            createStationsJSON(vFile);
+                            update = true;
+                            // con.
+
+                        }
+                    } else if (con.getLastModified() > vFile.lastModified()) {
+                        Log.i("#STATIONS.JSON#", "Need to update local stations.json");
+                        createStationsJSON(vFile);
+                        update = true;
+
                     }
+                } else {
+
+                    this.ja = jsonFileReader(vFile);
+
                 }
+
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -116,18 +131,25 @@ public class tkkDataMod {
         protected void onPostExecute(Integer result) {
             if(update){
                 instance.deleteAllStations();
-                for(int i = 0; i < jsons.size(); ++i) {
-                    JSONObject json = jsons.get(i);
-                    String name;
-                    String url;
-                    try {
+                try {
+                    for(int i = 0; i < this.ja.length(); ++i) {
+                        JSONObject json = this.ja.getJSONObject(i);
+                        String name;
+                        String url;
+
                         name = json.getString("name");
                         url = json.getString("url");
-                        CreateStationTask worker = new CreateStationTask(name, url, i);
-                        worker.executeOnExecutor(THREAD_POOL_EXECUTOR);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        instance.stations.add(dataSource.createStation(name, Uri.parse(url), defaultIcon, i, _activity));
+                        if(++completes >= tasks) {
+                            Callbacks cb = (Callbacks)_activity;
+                            completes = 0;
+                            cb.onDataLoaded(instance.stations);
+                        }
+                        //  worker.executeOnExecutor(THREAD_POOL_EXECUTOR);
+
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
             } else {
@@ -137,7 +159,21 @@ public class tkkDataMod {
 
         }
 
-        private String fileReader(InputStream inputStream) throws IOException {
+        private void createStationsJSON(File vFile){
+            FileOutputStream writer;
+            try {
+                writer = new FileOutputStream(vFile, false);
+                writer.write(this.body.getBytes());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.i("FILE WRITER", "Finished writing to stations.json");
+
+        }
+
+        private String streamReader(InputStream inputStream) throws IOException {
 
             BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
             StringBuilder total = new StringBuilder();
@@ -146,6 +182,23 @@ public class tkkDataMod {
                 total.append(line);
             }
             return total.toString();
+        }
+        private JSONArray jsonFileReader(File file){
+            JSONArray temp = new JSONArray();
+            try {
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                String line;
+                String lines = "";
+                while ((line = br.readLine()) != null) {
+                    lines += line;
+                }
+                temp = new JSONArray(lines);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return temp;
         }
     }
 
@@ -187,6 +240,7 @@ public class tkkDataMod {
             instance.stations.add(newStation);
             if(++completes >= tasks) {
                 Callbacks cb = (Callbacks)_activity;
+                completes = 0;
                 cb.onDataLoaded(instance.stations);
             }
         }
@@ -295,7 +349,12 @@ public class tkkDataMod {
     }
 
     public void destroyInstance(){
+        closeDataSource();
         instance = null;
+    }
+
+    public void closeDataSource(){
+        this.dataSource.close();
     }
     //endregion
 }
