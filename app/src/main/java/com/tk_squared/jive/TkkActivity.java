@@ -9,6 +9,8 @@ import com.millennialmedia.InlineAd;
 import com.millennialmedia.MMException;
 import com.millennialmedia.MMSDK;
 import com.millennialmedia.InterstitialAd;
+
+import android.util.Log;
 import android.widget.LinearLayout;
 /*************************************************************
  *    *********     **********             ******    ********
@@ -106,15 +108,16 @@ public class TkkActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         Fragment fragment = fm.findFragmentById(R.id.fragment_container);
-        if (fragment instanceof TkkWebViewFragment &&
-                ((TkkWebViewFragment) fragment).getWebview().canGoBack()) {
-            ((TkkWebViewFragment) fragment).getWebview().goBack();
-        } else if (fm.getBackStackEntryCount() > 1) {
-            if (fragment instanceof TkkWebViewFragment){
-                ((TkkWebViewFragment) fragment).getWebview().clearCache(true);
-                ((TkkWebViewFragment) fragment).getWebview().destroy();
-            }
-            fm.popBackStack();
+        if (fragment instanceof TkkWebViewFragment){
+                if (((TkkWebViewFragment) fragment).getWebview().canGoBack()) {
+                    ((TkkWebViewFragment) fragment).getWebview().goBack();
+                } else  {
+                    ((TkkWebViewFragment) fragment).getWebview().clearCache(true);
+                    ((TkkWebViewFragment) fragment).getWebview().destroy();
+                    if (fm.getBackStackEntryCount() > 1) {
+                        fm.popBackStack();
+                    }
+                }
         } else {
             super.onBackPressed();
         }
@@ -194,10 +197,16 @@ public class TkkActivity extends AppCompatActivity
 
     @Override
     public void onDestroy(){
+        tuxData.destroyInstance();
         //This doesn't really work
         ((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).cancelAll();
         adCleanup();
         super.onDestroy();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
     }
     //endregion
 
