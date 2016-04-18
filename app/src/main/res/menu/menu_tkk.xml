@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.tk_squared.jive.TkkActivity">
+    <item
+        android:id="@+id/action_fetch"
+        android:orderInCategory="100"
+        android:title="@string/menu_fetch_title"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_edit"
+        android:orderInCategory="200"
+        android:title="@string/menu_edit_title"
+        app:showAsAction="never"
+        android:checkable="true"/>
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="300"
+        android:title="@string/menu_about_title"
+        app:showAsAction="never" />
+</menu>

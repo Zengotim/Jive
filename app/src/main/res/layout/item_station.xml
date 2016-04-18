@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@drawable/effects_theme"
+    android:clickable="false">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="start"
+        android:paddingStart="5dp"
+        android:paddingLeft="5dp">
+        <ImageView
+            android:id="@+id/station_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="0.1"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_launcher"
+            android:contentDescription="@string/icon_description"/>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_weight="0.6"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_gravity="center">
+        <TextView
+            android:id="@+id/station_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/colorTextLight"
+            android:textSize="@dimen/list_name_size"
+            android:text="@string/station_title" />
+        <TextView
+            android:id="@+id/station_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/colorTextLight"
+            android:textSize="@dimen/list_URL_size"
+            android:text="@string/station_subtitle"/>
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="end"
+        android:background="@drawable/delete_button"
+        android:clickable="true"/>
+
+</LinearLayout>
