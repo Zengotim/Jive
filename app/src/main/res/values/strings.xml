@@ -27,4 +27,6 @@
     <string name="stations_list_url">http://tk-squared.com/Jive/stations.json</string>
     <string name="server_list_version">jive_server_version.txt</string>
     <integer name="about_screen_delay">8000</integer>
+    <integer name="interstitial_reload_delay">60000</integer>
+    <integer name="inline_ad_refresh_rate">30000</integer>
 </resources>

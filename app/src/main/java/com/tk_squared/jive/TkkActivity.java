@@ -1,27 +1,9 @@
 package com.tk_squared.jive;
 
-
-
-/**************************************************************
- * *********       Ad Support Section        ******** *******
- */
-import com.millennialmedia.InlineAd;
-import com.millennialmedia.MMException;
-import com.millennialmedia.MMSDK;
-import com.millennialmedia.InterstitialAd;
-
-import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.Gravity;
-import android.widget.LinearLayout;
-/*************************************************************
- *    *********     **********             ******    ********
- */
-
-
-
-
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -42,12 +24,10 @@ import android.view.MenuItem;
 
 import java.util.ArrayList;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.support.v7.widget.ShareActionProvider;
-import android.widget.TextView;
 
 
 /**
@@ -75,10 +55,11 @@ public class TkkActivity extends AppCompatActivity
     public boolean getListEditEnabled() {
         return listEditEnabled;
     }
-    private Handler handler = new Handler();
+    private Handler handler = new Handler(); public Handler getHandler() {return handler;}
     private MusicIntentReceiver musicIntentReceiver;
-    private boolean interstitialShowing = false;
-
+    private Runnable r;
+    private ServiceConnection mConnection;
+    private AdSupport adSupport = new AdSupport(this);
     //endregion
 
     public TkkActivity() {
@@ -99,7 +80,7 @@ public class TkkActivity extends AppCompatActivity
             progBar.setVisibility(View.VISIBLE);
         }
 
-        setupAdSupport();
+        adSupport.setupAdSupport();
 
         //Set up the headphone jack listener
         musicIntentReceiver = new MusicIntentReceiver(this);
@@ -113,15 +94,15 @@ public class TkkActivity extends AppCompatActivity
     public void onBackPressed() {
         Fragment fragment = fm.findFragmentById(R.id.fragment_container);
         if (fragment instanceof TkkWebViewFragment){
-                if (((TkkWebViewFragment) fragment).getWebview().canGoBack()) {
-                    ((TkkWebViewFragment) fragment).getWebview().goBack();
-                } else  {
-                    ((TkkWebViewFragment) fragment).getWebview().clearCache(true);
-                    ((TkkWebViewFragment) fragment).getWebview().destroy();
-                    if (fm.getBackStackEntryCount() > 1) {
-                        fm.popBackStack();
-                    }
+            if (((TkkWebViewFragment) fragment).getWebview().canGoBack()) {
+                ((TkkWebViewFragment) fragment).getWebview().goBack();
+            } else  {
+                ((TkkWebViewFragment) fragment).getWebview().clearCache(true);
+                ((TkkWebViewFragment) fragment).getWebview().destroy();
+                if (fm.getBackStackEntryCount() > 1) {
+                    fm.popBackStack();
                 }
+            }
         } else {
             super.onBackPressed();
         }
@@ -159,29 +140,10 @@ public class TkkActivity extends AppCompatActivity
         switch (item.getItemId()) {
             //Get new list
             case R.id.action_fetch:
-                TkkListViewFragment f = ((TkkListViewFragment) fm.findFragmentById(R.id.fragment_container));
-                AlertDialog.Builder cDialog = new AlertDialog.Builder((f.getListView().getContext()));
-                cDialog
-                        .setMessage("Do you want to download a new stations list?\n(This will add deleted stations back)")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener(){
-                            @Override
-                            public void onClick(DialogInterface dialog, int id){
-                                progBar.setVisibility(View.VISIBLE);
-                                tuxData.repopulateStations();
-                                ((ArrayAdapter)((TkkListViewFragment)fm.findFragmentById(R.id.fragment_container))
-                                        .getListView().getAdapter()).notifyDataSetChanged();
-
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener(){
-                            @Override
-                            public void onClick(DialogInterface dialog, int id){
-                                Log.i("#PPCITY#", "It's about to be piss pants city over here!");
-                            }
-                        });
-                AlertDialog a = cDialog.show();
-                TextView mView = (TextView)a.findViewById(android.R.id.message);
-                mView.setGravity(Gravity.CENTER);
+                progBar.setVisibility(View.VISIBLE);
+                tuxData.repopulateStations();
+                ((ArrayAdapter)((TkkListViewFragment)fm.findFragmentById(R.id.fragment_container))
+                        .getListView().getAdapter()).notifyDataSetChanged();
                 return true;
             //Edit list mode
             case R.id.action_edit:
@@ -212,6 +174,7 @@ public class TkkActivity extends AppCompatActivity
 
     @Override
     public void onResume(){
+        mConnection = null;
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
         registerReceiver(musicIntentReceiver, filter);
         ((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).cancelAll();
@@ -220,10 +183,11 @@ public class TkkActivity extends AppCompatActivity
 
     @Override
     public void onDestroy(){
+        handler.removeCallbacks(r);
         tuxData.destroyInstance();
         //This doesn't really work
         ((NotificationManager)getSystemService(NOTIFICATION_SERVICE)).cancelAll();
-        adCleanup();
+        adSupport.adCleanup();
         super.onDestroy();
     }
 
@@ -255,7 +219,7 @@ public class TkkActivity extends AppCompatActivity
                     .commit();
         }
         //Auto-return from about screen.
-        Runnable r = new Runnable() {
+        r = new Runnable() {
             @Override
             public void run() {
                 if (fm.getBackStackEntryCount() > 0) {
@@ -300,7 +264,7 @@ public class TkkActivity extends AppCompatActivity
     //Callback method for TuxedoActivityFragment.Callbacks
     @Override
     public void onStationSelected(tkkStation station) {
-        showInterstitial();
+        adSupport.showInterstitial();
         displayWebView(station);
     }
 
@@ -309,7 +273,7 @@ public class TkkActivity extends AppCompatActivity
     public void onDataLoaded(ArrayList<tkkStation> stations) {
         progBar.setVisibility(View.GONE);
         displayListView();
-        //interstitial.asyncLoadNewBanner();
+        adSupport.loadInterstitial();
     }
 
     //callback method for TkkWebViewFragment.Callbacks
@@ -339,237 +303,35 @@ public class TkkActivity extends AppCompatActivity
         }
     }
 
-    private void sendNotification(){
-        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
-        if (fragment instanceof TkkWebViewFragment){
-            Notification.Builder builder = new Notification.Builder(this)
-                    .setSmallIcon(R.drawable.ic_launcher)
-                    .setContentText(getString(R.string.app_name))
-                    .setContentText(((TkkWebViewFragment) fragment).getCurrentName());
-            Intent intent = new Intent(this, TkkActivity.class);
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(this)
-                    .addParentStack(TkkActivity.class)
-                    .addNextIntent(intent);
-            PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-            builder.setContentIntent(pendingIntent);NotificationManager nm =
-                    (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            nm.notify(1, builder.build());
+
+    private void sendNotification() {
+        final Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+        if (fragment instanceof TkkWebViewFragment) {
+            mConnection = new ServiceConnection() {
+                public void onServiceConnected(ComponentName className, IBinder binder) {
+                    ((NotificationKillerService.KillBinder) binder).service.startService(new Intent(
+                            TkkActivity.this, NotificationKillerService.class));
+                    Notification.Builder builder = new Notification.Builder(fragment.getActivity())
+                            .setSmallIcon(R.drawable.ic_launcher)
+                            .setContentText(getString(R.string.app_name))
+                            .setContentText(((TkkWebViewFragment) fragment).getCurrentName());
+                    Intent intent = new Intent(fragment.getActivity(), TkkActivity.class);
+                    TaskStackBuilder stackBuilder = TaskStackBuilder.create(fragment.getActivity())
+                            .addParentStack(TkkActivity.class)
+                            .addNextIntent(intent);
+                    PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                    builder.setContentIntent(pendingIntent);
+                    NotificationManager nm =
+                            (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    nm.notify(NotificationKillerService.NOTIFICATION_ID, builder.build());
+                }
+
+                public void onServiceDisconnected(ComponentName className) {
+                }
+            };
+            bindService(new Intent(TkkActivity.this, NotificationKillerService.class), mConnection,
+                    Context.BIND_AUTO_CREATE);
         }
     }
-
-
-    //region Description: Ad Support
-
-    /*****************************************************
-     * ****      Ad Support Section  ***  *******  ******
-     */
-
-    /***************************************************
-     * ******     Ad Support Section      *****  ******
-     */
-    private InterstitialAd interstitial;
-
-    /***************************************************
-     *            ****************         ***** ******
-     */
-
-
-
-    private void loadInter(){
-        if (interstitial != null) {
-            interstitial.load(this, null);
-        }
-        Runnable r = new Runnable(){
-            @Override
-            public void run(){
-                loadInter();
-            }
-        };
-        handler.postDelayed(r, 60000);
-    }
-
-    private void showInterstitial(){
-        // Check that the ad is ready.
-        if (interstitial.isReady()) {
-            // Show the Ad using the display options you configured.
-            try {
-                interstitialShowing = true;
-                interstitial.show(this);
-            } catch (MMException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
-
-    private void setupAdSupport(){
-        //Set up ad support
-        setMMedia();
-        setAdSpace();
-        setInterstitialAd();
-        loadInter();
-    }
-
-    //region Description: Ad Support settings
-    private void setMMedia() {
-        MMSDK.initialize(this);
-        /*UserData userData = new UserData()
-                .setAge(<age>)
-                .setChildren(<children>)
-                .setCountry(<country>)
-                .setDma(<dma>)
-                .setDob(<dob>)
-                .setEducation(<education>)
-                .setEthnicity(<ethnicity>)
-                .setGender(<gender>)
-                .setIncome(<income>)
-                .setKeywords(<keywords>)
-                .setMarital(<marital>)
-                .setPolitics(<politics>)
-                .setPostalCode(<postal-code>)
-                .setState(<state>);
-        MMSDK.setUserData(userData);*/
-    }
-
-    private void setAdSpace() {
-
-        try {
-            // NOTE: The ad container argument passed to the createInstance call should be the
-            // view container that the ad content will be injected into.
-            InlineAd inlineAd = InlineAd.createInstance("220358",
-                    (LinearLayout) findViewById(R.id.ad_container));
-            final InlineAd.InlineAdMetadata inlineAdMetadata = new InlineAd.InlineAdMetadata().
-                    setAdSize(InlineAd.AdSize.BANNER);
-
-            inlineAd.request(inlineAdMetadata);
-
-            inlineAd.setListener(new InlineAd.InlineListener() {
-                @Override
-                public void onRequestSucceeded(InlineAd inlineAd) {
-
-                    if (inlineAd != null) {
-                        // set a refresh rate of 30 seconds that will be applied after the first request
-                        inlineAd.setRefreshInterval(30000);
-
-                        // The InlineAdMetadata instance is used to pass additional metadata to the server to
-                        // improve ad selection
-                        final InlineAd.InlineAdMetadata inlineAdMetadata = new InlineAd.InlineAdMetadata().
-                                setAdSize(InlineAd.AdSize.BANNER);
-
-                    }
-                }
-
-
-                @Override
-                public void onRequestFailed(InlineAd inlineAd, InlineAd.InlineErrorStatus errorStatus) {
-
-                }
-
-
-                @Override
-                public void onClicked(InlineAd inlineAd) {
-
-                }
-
-
-                @Override
-                public void onResize(InlineAd inlineAd, int width, int height) {
-
-                }
-
-
-                @Override
-                public void onResized(InlineAd inlineAd, int width, int height, boolean toOriginalSize) {
-
-                }
-
-
-                @Override
-                public void onExpanded(InlineAd inlineAd) {
-
-                }
-
-
-                @Override
-                public void onCollapsed(InlineAd inlineAd) {
-
-                }
-
-
-                @Override
-                public void onAdLeftApplication(InlineAd inlineAd) {
-
-                }
-            });
-
-        } catch (MMException e) {
-            // abort loading ad
-        }
-    }
-
-    private void setInterstitialAd(){
-        try {
-            interstitial = InterstitialAd.createInstance(getString(R.string.mmedia_inter_apid));
-
-            interstitial.setListener(new InterstitialAd.InterstitialListener() {
-                @Override
-                public void onLoaded(InterstitialAd interstitialAd) {
-
-                }
-
-
-                @Override
-                public void onLoadFailed(InterstitialAd interstitialAd,
-                                         InterstitialAd.InterstitialErrorStatus errorStatus) {
-                    loadInter();
-                }
-
-
-                @Override
-                public void onShown(InterstitialAd interstitialAd) {
-
-                }
-
-
-                @Override
-                public void onShowFailed(InterstitialAd interstitialAd,
-                                         InterstitialAd.InterstitialErrorStatus errorStatus) {
-
-                }
-
-
-                @Override
-                public void onClosed(InterstitialAd interstitialAd) {
-                    interstitialShowing = false;
-
-                }
-
-
-                @Override
-                public void onClicked(InterstitialAd interstitialAd) {
-
-                }
-
-
-                @Override
-                public void onAdLeftApplication(InterstitialAd interstitialAd) {
-
-                }
-
-
-                @Override
-                public void onExpired(InterstitialAd interstitialAd) {
-                }
-            });
-
-        } catch (MMException e) {
-            // abort loading ad
-        }
-    }
-
-    private void adCleanup(){
-        //nothing to do
-    }
-    //endregion
 
 }
