@@ -48,9 +48,6 @@ public class TkkActivity extends AppCompatActivity
     public tkkDataMod getData() {
         return tuxData;
     }
-    public void setData(tkkDataMod data) {
-        tuxData = data;
-    }
     public ArrayList<tkkStation> getTkkData() {
         return tuxData.getStations();
     }
@@ -60,15 +57,14 @@ public class TkkActivity extends AppCompatActivity
     public boolean getListEditEnabled() {
         return listEditEnabled;
     }
-    private Handler handler = new Handler(); public Handler getHandler() {return handler;}
+    private final Handler handler = new Handler(); public Handler getHandler() {return handler;}
     private MusicIntentReceiver musicIntentReceiver;
     private Runnable r;
     private ServiceConnection mConnection;
-    private AdSupport adSupport = new AdSupport(this);
+    private final AdSupport adSupport = new AdSupport(this);
     //endregion
 
-    public TkkActivity() {
-    }
+    public TkkActivity() {}
 
     //region Description: Lifecycle and Super Overrides
     @Override
@@ -167,7 +163,7 @@ public class TkkActivity extends AppCompatActivity
                         });
                 AlertDialog a = cDialog.show();
                 TextView mView = (TextView)a.findViewById(android.R.id.message);
-                mView.setGravity(Gravity.CENTER);
+                if (mView != null) {mView.setGravity(Gravity.CENTER);}
                 return true;
             //Edit list mode
             case R.id.action_edit:
@@ -294,7 +290,7 @@ public class TkkActivity extends AppCompatActivity
 
     //Callback method for tkkDataMod.Callbacks
     @Override
-    public void onDataLoaded(ArrayList<tkkStation> stations) {
+    public void onDataLoaded() {
         progBar.setVisibility(View.GONE);
         displayListView();
         adSupport.loadInterstitial();

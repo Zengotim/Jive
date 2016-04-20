@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Jive</string>
     <integer name="version_code">1</integer>
-    <string name="version_name">1.0</string>
-    <string name="compile_date">Compiled on ...</string>
+    <string name="version_name">Version:  </string>
+    <string name="compile_date">Compiled on: </string>
     <string name="company">TK-Squared, LLC</string>
-    <string name="action_settings">Settings</string>
     <string name="subtitle">Jazz Stations</string>
     <string name="station_title">Station Title</string>
     <string name="station_subtitle">Station Subtitle</string>
+    <string name="share_title">Share</string>
     <string name="url_error">Oh No! That Station Didn\'t Load!</string>
     <string name="ad_description">Ad support - We like to eat too!</string>
     <string name="icon_description">Station Icon</string>
@@ -17,15 +17,10 @@
     <string name="menu_fetch_title">Check For new List</string>
     <string name="menu_edit_title">Edit List</string>
     <string name="menu_about_title">About Jive</string>
-    <string name="skip_login">Skip</string>
-    <string name="web_page_title">Jive Main Page</string>
     <string name="web_page_url">http://www.tk-squared.com/Jive</string>
-    <string name="deep_url">android-app://com.tk_squared.jive/http/www.tk-squared.com/Jive</string>
     <string name="app_id_string">com.tk_squared.jive</string>
     <string name="app_icon_url">http://www.tk-squared.com/Jive/jive_icon.png</string>
-    <string name="facebook_app_id">1045707532135034</string>
     <string name="stations_list_url">http://tk-squared.com/Jive/stations.json</string>
-    <string name="server_list_version">jive_server_version.txt</string>
     <integer name="about_screen_delay">8000</integer>
     <integer name="interstitial_reload_delay">60000</integer>
     <integer name="inline_ad_refresh_rate">30000</integer>

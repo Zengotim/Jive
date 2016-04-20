@@ -52,11 +52,6 @@ public class TkkWebViewFragment extends Fragment{
     }
 
     @Override
-    public void onPause(){
-        super.onPause();
-    }
-
-    @Override
     public void onResume(){
         super.onResume();
         setupWebView();

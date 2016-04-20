@@ -34,7 +34,7 @@ import java.util.ArrayList;
 public class tkkDataMod {
 
     public interface Callbacks {
-        void onDataLoaded(ArrayList<tkkStation> _stations);
+        void onDataLoaded();
     }
 
 
@@ -47,7 +47,7 @@ public class tkkDataMod {
     public void saveIcon(int idx, Bitmap icon){
         //save the icon to station at index
         stations.get(idx).setIcon(new BitmapDrawable(_activity.getResources(), icon));
-        dataSource.updateStation(stations.get(idx), _activity);
+        dataSource.updateStation(stations.get(idx));
     }
 
     private class GetServerDataTask extends  AsyncTask<Void, Integer, Integer> {
@@ -57,9 +57,6 @@ public class tkkDataMod {
 
         Bitmap defaultIcon;
         JSONArray jsons;
-
-        public GetServerDataTask(){
-        }
 
         public GetServerDataTask(Boolean u) {
             this.update = u;
@@ -131,7 +128,7 @@ public class tkkDataMod {
 
         protected void onPostExecute(Integer result) {
             Callbacks cb = (Callbacks)_activity;
-            cb.onDataLoaded(instance.stations);
+            cb.onDataLoaded();
 
         }
 
@@ -206,7 +203,7 @@ public class tkkDataMod {
 
     //Called to populate the stations list
     private void populateStations(){
-        GetServerDataTask reader = new GetServerDataTask();
+        GetServerDataTask reader = new GetServerDataTask(false);
         reader.execute();
     }
 
@@ -221,7 +218,7 @@ public class tkkDataMod {
         moveStation(getStationAt(idx), newIdx);
     }
 
-    public void moveStation(tkkStation s, int newIdx){
+    private void moveStation(tkkStation s, int newIdx){
         stations.remove(s);
         stations.add(newIdx,s);
         int start = s.getIndex() <= newIdx ? s.getIndex() : newIdx;
@@ -231,7 +228,7 @@ public class tkkDataMod {
             stations.get(i).setIndex(i);
         }
 
-        dataSource.updateStation(s, _activity);
+        dataSource.updateStation(s);
     }
 
     public void removeStationAt(int i){
@@ -240,7 +237,7 @@ public class tkkDataMod {
         stations.remove(i);
     }
 
-    public void deleteAllStations() {
+    private void deleteAllStations() {
         stations = null;
         stations = new ArrayList<>();
         dataSource.deleteAll();
@@ -260,7 +257,7 @@ public class tkkDataMod {
         instance = null;
     }
 
-    public void closeDataSource(){
+    private void closeDataSource(){
         this.dataSource.close();
     }
 

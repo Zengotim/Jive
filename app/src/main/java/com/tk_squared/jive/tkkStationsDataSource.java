@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * Created by Kevin on 1/10/2016.
  * Uses modified example code from stackoverflow
  */
-public class tkkStationsDataSource {
+class tkkStationsDataSource {
 
     public static class BitmapHelper {
 
@@ -78,9 +78,9 @@ public class tkkStationsDataSource {
     }
     // Database fields
     private SQLiteDatabase database;
-    private MySQLiteHelper dbHelper;
+    private final MySQLiteHelper dbHelper;
     //private DbBitmapUtility bmHelper;
-    private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
+    private final String[] allColumns = { MySQLiteHelper.COLUMN_ID,
             MySQLiteHelper.COLUMN_IDX,
             MySQLiteHelper.COLUMN_URI,
             MySQLiteHelper.COLUMN_NAME,
@@ -97,33 +97,6 @@ public class tkkStationsDataSource {
 
     public void close() {
         dbHelper.close();
-    }
-
-    public void addStation(tkkStation s) {
-        ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.COLUMN_URI, s.getUri().toString());
-        values.put(MySQLiteHelper.COLUMN_NAME, s.getName());
-        //values.put(MySQLiteHelper.COLUMN_ICON, s.getIconURI().toString());
-
-        long insertId = database.insert(MySQLiteHelper.TABLE_STATIONS, null, values);
-        s.setIndex(((int) insertId));
-    }
-
-    public tkkStation createStation(String n, Uri u, Activity activity) {
-        ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.COLUMN_URI, u.toString());
-        values.put(MySQLiteHelper.COLUMN_NAME, n);
-
-        values.put(MySQLiteHelper.COLUMN_ICON, "test");
-
-        long insertId = database.insert(MySQLiteHelper.TABLE_STATIONS, null, values);
-
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_STATIONS,
-                allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null, null, null, null);
-        cursor.moveToFirst();
-        tkkStation newStation = cursorToStation(cursor, activity);
-        cursor.close();
-        return newStation;
     }
 
     public tkkStation createStation(String n, Uri u, Bitmap b, Integer i, Activity activity) {
@@ -151,7 +124,7 @@ public class tkkStationsDataSource {
         database.delete(MySQLiteHelper.TABLE_STATIONS, MySQLiteHelper.COLUMN_ID + " = " + id, null);
     }
 
-    public void updateStation(tkkStation s, Activity activity){
+    public void updateStation(tkkStation s){
         ContentValues cv = new ContentValues();
         cv.put(MySQLiteHelper.COLUMN_IDX, s.getIndex());
         cv.put(MySQLiteHelper.COLUMN_NAME, s.getName());

@@ -4,6 +4,8 @@ package com.tk_squared.jive;
  * Created by zengo on 4/13/2016.
  * With lovingkindness
  */
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -11,14 +13,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-/**
- * Created by ZengoTim on 3/29/16.
- * Rockin your world one bit at a time.
- */
+@SuppressLint("unused")
+@SuppressWarnings("unused")
 public class MusicIntentReceiver extends BroadcastReceiver {
     private Activity activity;
 
-    //Some idiot file insisted on this. The manifest I think.
+    //The manifest freaks out without a default constructor.
     public MusicIntentReceiver(){}
 
     public MusicIntentReceiver(Activity activity){

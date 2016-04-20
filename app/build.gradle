@@ -11,10 +11,16 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        buildConfigField "long", "TIMESTAMP", System.currentTimeMillis() + "L"
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            shrinkResources false
+        }
         release {
             minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -32,6 +38,7 @@ android {
             dx.additionalParameters += "main-dex-list=$projectDir/<filename>".toString()
         }
     }
+    return true
 }
 
 dependencies {

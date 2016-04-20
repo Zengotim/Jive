@@ -26,7 +26,7 @@ public class NotificationKillerService extends Service {
 
     }
 
-    public static int NOTIFICATION_ID = 666;
+    public static final int NOTIFICATION_ID = 666;
     private final IBinder mBinder = new KillBinder(this);
 
     @Override

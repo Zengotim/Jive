@@ -1,6 +1,5 @@
 package com.tk_squared.jive;
 
-
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,15 +23,14 @@ public class TkkListViewFragment extends Fragment implements RearrangeableListVi
     private RearrangeableListView listView;
     public RearrangeableListView getListView(){return listView;}
     private int position;
-    public Callbacks callbacks;
+    private Callbacks callbacks;
 
     //Interface for handling fragment change on selection
     public interface Callbacks{
         void onStationSelected(tkkStation station);
     }
 
-    public TkkListViewFragment() {
-    }
+    public TkkListViewFragment() {}
     //endregion
 
     //region Desc: RearrangeableListView Listener interface methods
@@ -169,7 +167,7 @@ public class TkkListViewFragment extends Fragment implements RearrangeableListVi
                         @Override
                         public void onClick(DialogInterface dialog, int id){
                             ((TkkActivity) getActivity()).getData().removeStationAt(position);
-                            notifyDataSetChanged();
+                            ((ArrayAdapter)listView.getAdapter()).notifyDataSetChanged();
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener(){

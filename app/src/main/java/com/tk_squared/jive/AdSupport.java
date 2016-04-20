@@ -13,15 +13,16 @@ import android.widget.LinearLayout;
  * This is the One by AOL version of this class!!
  * make sure you are using the correct version!!
  */
-public class AdSupport {
+class AdSupport {
 
-    private TkkActivity activity;
+    private final TkkActivity activity;
     private InterstitialAd interstitial;
 
     public AdSupport(TkkActivity activity){
         this.activity = activity;
     }
 
+    //Load interstitial, repeating on delay time
     private void loadInter(){
         if (interstitial != null) {
             interstitial.load(activity, null);
@@ -220,11 +221,13 @@ public class AdSupport {
         }
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void adCleanup(){
         //nothing to do
         //used in Smaato version
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void loadInterstitial(){
         //nothing to do
         //used in Smaato version
