@@ -10,7 +10,10 @@ import com.millennialmedia.MMException;
 import com.millennialmedia.MMSDK;
 import com.millennialmedia.InterstitialAd;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.LinearLayout;
 /*************************************************************
  *    *********     **********             ******    ********
@@ -44,6 +47,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.support.v7.widget.ShareActionProvider;
+import android.widget.TextView;
 
 
 /**
@@ -155,10 +159,29 @@ public class TkkActivity extends AppCompatActivity
         switch (item.getItemId()) {
             //Get new list
             case R.id.action_fetch:
-                progBar.setVisibility(View.VISIBLE);
-                tuxData.repopulateStations();
-                ((ArrayAdapter)((TkkListViewFragment)fm.findFragmentById(R.id.fragment_container))
-                        .getListView().getAdapter()).notifyDataSetChanged();
+                TkkListViewFragment f = ((TkkListViewFragment) fm.findFragmentById(R.id.fragment_container));
+                AlertDialog.Builder cDialog = new AlertDialog.Builder((f.getListView().getContext()));
+                cDialog
+                        .setMessage("Do you want to download a new stations list?\n(This will add deleted stations back)")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int id){
+                                progBar.setVisibility(View.VISIBLE);
+                                tuxData.repopulateStations();
+                                ((ArrayAdapter)((TkkListViewFragment)fm.findFragmentById(R.id.fragment_container))
+                                        .getListView().getAdapter()).notifyDataSetChanged();
+
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int id){
+                                Log.i("#PPCITY#", "It's about to be piss pants city over here!");
+                            }
+                        });
+                AlertDialog a = cDialog.show();
+                TextView mView = (TextView)a.findViewById(android.R.id.message);
+                mView.setGravity(Gravity.CENTER);
                 return true;
             //Edit list mode
             case R.id.action_edit:
