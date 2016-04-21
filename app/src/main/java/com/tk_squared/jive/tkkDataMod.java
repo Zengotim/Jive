@@ -1,4 +1,5 @@
 package com.tk_squared.jive;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

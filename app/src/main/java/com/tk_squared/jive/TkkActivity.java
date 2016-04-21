@@ -20,7 +20,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -129,8 +128,9 @@ public class TkkActivity extends AppCompatActivity
             shareIntent.setType("image/*");
             shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(getString(R.string.app_icon_url)));
             shareIntent.putExtra(Intent.EXTRA_TITLE, getString(R.string.app_name));
-            shareIntent.putExtra(Intent.EXTRA_TEXT, ((TkkWebViewFragment) fragment).getCurrentName());
-            shareIntent.putExtra(Intent.EXTRA_TEXT, ((TkkWebViewFragment) fragment).getCurrentUrl());
+            shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message)
+                    + getString(R.string.subtitle) + '\n' + ((TkkWebViewFragment) fragment).getCurrentName() +
+                    '\n' + getString(R.string.get_message) + '\n' + getString(R.string.download_url));
             mShareActionProvider.setShareIntent(shareIntent);
         }
         return true;
@@ -158,7 +158,7 @@ public class TkkActivity extends AppCompatActivity
                         .setNegativeButton("No", new DialogInterface.OnClickListener(){
                             @Override
                             public void onClick(DialogInterface dialog, int id){
-                                Log.i("#PPCITY#", "It's about to be piss pants city over here!");
+                                //do nothing
                             }
                         });
                 AlertDialog a = cDialog.show();

@@ -8,6 +8,9 @@
     <string name="station_title">Station Title</string>
     <string name="station_subtitle">Station Subtitle</string>
     <string name="share_title">Share</string>
+    <string name="share_message">Listening to awesome </string>
+    <string name="get_message">Get Jive! Free Jazz for your Android!</string>
+    <string name="download_url">https://play.google.com/store/apps/details?id=com.tk_squared.jive</string>
     <string name="url_error">Oh No! That Station Didn\'t Load!</string>
     <string name="ad_description">Ad support - We like to eat too!</string>
     <string name="icon_description">Station Icon</string>
