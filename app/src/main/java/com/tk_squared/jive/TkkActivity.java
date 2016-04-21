@@ -129,7 +129,7 @@ public class TkkActivity extends AppCompatActivity
             shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(getString(R.string.app_icon_url)));
             shareIntent.putExtra(Intent.EXTRA_TITLE, getString(R.string.app_name));
             shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_message) + " "
-                    + getString(R.string.subtitle) + '\n' + ((TkkWebViewFragment) fragment).getCurrentName() +
+                    + getString(R.string.subtitle) + '\n' + fragment.getArguments().getString("name") +
                     '\n' + getString(R.string.get_message) + '\n' + getString(R.string.download_url));
             mShareActionProvider.setShareIntent(shareIntent);
         }
