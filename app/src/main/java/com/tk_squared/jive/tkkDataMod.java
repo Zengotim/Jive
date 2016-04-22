@@ -73,8 +73,7 @@ public class tkkDataMod {
                         .getResources(), R.drawable.ic_launcher);
                 File vFile = new File(_activity.getApplicationContext().getFilesDir(), "stations.json");
                 if (!update) {
-                    // URL url = new URL(_activity.getString(R.string.stations_list_url));
-                    URL url = new URL("http://tk-squared.com/Jive/stations_.json");
+                    URL url = new URL(_activity.getString(R.string.stations_list_url));
                     URLConnection con = url.openConnection();
 
 

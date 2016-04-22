@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Jive</string>
-    <integer name="version_code">1</integer>
     <string name="version_name">Version:  </string>
     <string name="compile_date">Compiled on: </string>
     <string name="company">TK-Squared, LLC</string>
@@ -11,8 +10,6 @@
     <string name="share_message">Listening to awesome </string>
     <string name="get_message">Get Jive! Free Jazz for your Android!</string>
     <string name="download_url">https://play.google.com/store/apps/details?id=com.tk_squared.jive</string>
-    <string name="url_error">Oh No! That Station Didn\'t Load!</string>
-    <string name="ad_description">Ad support - We like to eat too!</string>
     <string name="icon_description">Station Icon</string>
     <string name="splash_description">TK-Squared Logo</string>
     <string name="mmedia_apid">220358</string>
@@ -23,7 +20,7 @@
     <string name="web_page_url">http://www.tk-squared.com/Jive</string>
     <string name="app_id_string">com.tk_squared.jive</string>
     <string name="app_icon_url">http://www.tk-squared.com/Jive/jive_icon.png</string>
-    <string name="stations_list_url">http://tk-squared.com/Jive/stations.json</string>
+    <string name="stations_list_url">http://tk-squared.com/Jive/stations_.json</string>
     <integer name="about_screen_delay">8000</integer>
     <integer name="interstitial_reload_delay">60000</integer>
     <integer name="inline_ad_refresh_rate">30000</integer>

@@ -23,7 +23,7 @@ public class TkkWebViewFragment extends Fragment{
 
     //region Description: Variables and Constructor and Callbacks
     private WebView webview; public WebView getWebview(){ return webview;}
-    private String currentUrl; public String getCurrentUrl() {return currentUrl;}
+    private String currentUrl;
     private String currentName; public String getCurrentName() {return currentName;}
     private Integer currentIndex;
 
