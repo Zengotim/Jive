@@ -38,8 +38,6 @@ android {
         }
     }
     return true
-    productFlavors {
-    }
 }
 
 dependencies {
