@@ -48,6 +48,7 @@
         android:layout_below="@id/about_app_url"
         android:text=""/>
     <TextView
+        android:id="@+id/about_co_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textIsSelectable="false"
@@ -56,4 +57,12 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/about_app_date"
         android:text="@string/company"/>
+    <TextView
+        android:id="@+id/disclaimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textIsSelectable="false"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/about_co_name"
+        android:text="@string/disclaimer"/>
 </RelativeLayout>

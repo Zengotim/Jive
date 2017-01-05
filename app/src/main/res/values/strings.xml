@@ -1,4 +1,5 @@
 <resources>
+    <string name="disclaimer">NOTICE: Tk-Squared, LLC does not own, operate, or have any affiliation with the websites and radio streams available through the use of this app. Those sites/streams remain the property and responsibility of their respective owners and operators. Any requests for money are coming from website owners. This app is 100% free and TK-Squared, LLC will never ask you for money in this app.</string>
     <string name="app_name">Jive</string>
     <string name="version_name">Version:  </string>
     <string name="compile_date">Compiled on: </string>
@@ -21,7 +22,7 @@
     <string name="app_id_string">com.tk_squared.jive</string>
     <string name="app_icon_url">http://www.tk-squared.com/Jive/jive_icon.png</string>
     <string name="stations_list_url">http://tk-squared.com/Jive/stations_.json</string>
-    <integer name="about_screen_delay">8000</integer>
+    <integer name="about_screen_delay">15000</integer>
     <integer name="interstitial_reload_delay">60000</integer>
     <integer name="inline_ad_refresh_rate">30000</integer>
 </resources>
