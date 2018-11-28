@@ -24,8 +24,8 @@
     <string name="app_icon_url">https://www.tk-squared.com/Jive/jive_icon.png</string>
     <string name="stations_list_url">https://tk-squared.com/Jive/stations_.json</string>
     <integer name="smaato_pub_id">1100018452</integer>
-    <integer name="smaato_ad_id">130119019</integer>
-    <integer name="smaato_inter_id">130119020</integer>
+    <integer name="smaato_ad_id">130547427</integer>
+    <integer name="smaato_inter_id">130547428</integer>
     <integer name="smaato_reload_delay">20</integer>
     <integer name="about_screen_delay">15000</integer>
     <integer name="interstitial_reload_delay">60000</integer>
