@@ -42,9 +42,11 @@
                 <!-- note that the leading "/" is required for pathPrefix-->
                 <!-- Accepts URIs that begin with "example://gizmos” -->
                 <data android:scheme="example"
-                    android:host="Jive" />
+                    android:host="jive" />
             </intent-filter>
         </activity>
+        <activity android:name="com.smaato.soma.interstitial.InterstitialActivity" />
+        <activity android:name="com.smaato.soma.ExpandedBannerActivity" />
         <service android:name="NotificationKillerService" />
     </application>
 </manifest>

@@ -1,238 +1,114 @@
 package com.tk_squared.jive;
 
-import com.millennialmedia.InlineAd;
-import com.millennialmedia.MMException;
-import com.millennialmedia.MMSDK;
-import com.millennialmedia.InterstitialAd;
+import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
-import android.widget.LinearLayout;
+import com.smaato.soma.AdDimension;
+import com.smaato.soma.BannerView;
+import com.smaato.soma.interstitial.Interstitial;
+import com.smaato.soma.interstitial.InterstitialAdListener;
 
 
 /**
  * Created by zengo on 4/19/2016.
- * This is the One by AOL version of this class!!
- * make sure you are using the correct version!!
+ * This is the Smaato version of
+ * this file!
+ * Make sure you are using the
+ * correct version!!
  */
-class AdSupport {
 
+class AdSupport implements InterstitialAdListener {
+
+    private Interstitial interstitial;
     private final TkkActivity activity;
-    private InterstitialAd interstitial;
 
     public AdSupport(TkkActivity activity){
         this.activity = activity;
     }
 
-    //Load interstitial, repeating on delay time
-    private void loadInter(){
-        if (interstitial != null) {
-            interstitial.load(activity, null);
-        }
-        Runnable r = new Runnable(){
-            @Override
-            public void run(){
-                loadInter();
-            }
-        };
-        activity.getHandler().postDelayed(r,
-                activity.getResources().getInteger(R.integer.interstitial_reload_delay));
-    }
-
     public void showInterstitial(){
-        // Check that the ad is ready.
-        if (interstitial.isReady()) {
-            // Show the Ad using the display options you configured.
-            try {
-                interstitial.show(activity);
-            } catch (MMException e) {
-                e.printStackTrace();
-            }
-
+        if(interstitial.isInterstitialReady()){
+            interstitial.show();
         }
     }
+
 
     public void setupAdSupport(){
-        //Set up ad support
-        setMMedia();
-        setAdSpace();
+        //Set up interstitial ads
         setInterstitialAd();
-        loadInter();
-    }
-
-    //region Description: Ad Support settings
-    private void setMMedia() {
-        MMSDK.initialize(activity);
-        //really nosey shit i don't like here!
-        /*UserData userData = new UserData()
-                .setAge(<age>)
-                .setChildren(<children>)
-                .setCountry(<country>)
-                .setDma(<dma>)
-                .setDob(<dob>)
-                .setEducation(<education>)
-                .setEthnicity(<ethnicity>)
-                .setGender(<gender>)
-                .setIncome(<income>)
-                .setKeywords(<keywords>)
-                .setMarital(<marital>)
-                .setPolitics(<politics>)
-                .setPostalCode(<postal-code>)
-                .setState(<state>);
-        MMSDK.setUserData(userData);*/
-    }
-
-    private void setAdSpace() {
-
-        try {
-            // NOTE: The ad container argument passed to the createInstance call should be the
-            // view container that the ad content will be injected into.
-            LinearLayout l = (LinearLayout) activity.findViewById(R.id.ad_container);
-            InlineAd inlineAd;
-            if (l != null) {
-                inlineAd = InlineAd.createInstance(activity.getString(R.string.mmedia_apid),
-                        l);
-                final InlineAd.InlineAdMetadata inlineAdMetadata = new InlineAd.InlineAdMetadata().
-                        setAdSize(InlineAd.AdSize.BANNER);
-
-                inlineAd.request(inlineAdMetadata);
-
-
-                inlineAd.setListener(new InlineAd.InlineListener() {
-                    @Override
-                    public void onRequestSucceeded(InlineAd inlineAd) {
-
-                        if (inlineAd != null) {
-                            // set a refresh rate of 30 seconds that will be applied after the first request
-                            inlineAd.setRefreshInterval
-                                    (activity.getResources().getInteger(R.integer.inline_ad_refresh_rate));
-                            // The InlineAdMetadata instance is used to pass additional metadata to the server to
-                            // improve ad selection
-                            //final InlineAd.InlineAdMetadata inlineAdMetadata = new InlineAd.InlineAdMetadata().
-                            //        setAdSize(InlineAd.AdSize.BANNER);
-
-                        }
-                    }
-
-
-                    @Override
-                    public void onRequestFailed(InlineAd inlineAd, InlineAd.InlineErrorStatus errorStatus) {
-
-                    }
-
-
-                    @Override
-                    public void onClicked(InlineAd inlineAd) {
-
-                    }
-
-
-                    @Override
-                    public void onResize(InlineAd inlineAd, int width, int height) {
-
-                    }
-
-
-                    @Override
-                    public void onResized(InlineAd inlineAd, int width, int height, boolean toOriginalSize) {
-
-                    }
-
-
-                    @Override
-                    public void onExpanded(InlineAd inlineAd) {
-
-                    }
-
-
-                    @Override
-                    public void onCollapsed(InlineAd inlineAd) {
-
-                    }
-
-
-                    @Override
-                    public void onAdLeftApplication(InlineAd inlineAd) {
-
-                    }
-                });
-            }
-
-        } catch (MMException e) {
-            // abort loading ad
-        }
+        //Set up banner ads
+        setupSmaato();
     }
 
     private void setInterstitialAd(){
-        try {
-            interstitial = InterstitialAd.createInstance(activity.getString(R.string.mmedia_inter_apid));
-
-            interstitial.setListener(new InterstitialAd.InterstitialListener() {
-                @Override
-                public void onLoaded(InterstitialAd interstitialAd) {
-
-                }
-
-
-                @Override
-                public void onLoadFailed(InterstitialAd interstitialAd,
-                                         InterstitialAd.InterstitialErrorStatus errorStatus) {
-                    loadInter();
-                }
-
-
-                @Override
-                public void onShown(InterstitialAd interstitialAd) {
-
-                }
-
-
-                @Override
-                public void onShowFailed(InterstitialAd interstitialAd,
-                                         InterstitialAd.InterstitialErrorStatus errorStatus) {
-
-                }
-
-
-                @Override
-                public void onClosed(InterstitialAd interstitialAd) {
-
-
-                }
-
-
-                @Override
-                public void onClicked(InterstitialAd interstitialAd) {
-
-                }
-
-
-                @Override
-                public void onAdLeftApplication(InterstitialAd interstitialAd) {
-
-                }
-
-
-                @Override
-                public void onExpired(InterstitialAd interstitialAd) {
-                }
-            });
-
-        } catch (MMException e) {
-            // abort loading ad
-        }
+        interstitial = new Interstitial(activity);
+        interstitial.setInterstitialAdListener(this);
+        interstitial.getAdSettings().setPublisherId(activity.getResources().getInteger(R.integer.smaato_pub_id));
+        interstitial.getAdSettings().setAdspaceId(activity.getResources().getInteger(R.integer.smaato_inter_id));
     }
 
-    @SuppressWarnings("EmptyMethod")
-    public void adCleanup(){
-        //nothing to do
-        //used in Smaato version
+    private void interBannerLoad(){
+        Runnable r = new Runnable(){
+            @Override
+            public void run(){
+                interstitial.asyncLoadNewBanner();
+                Log.i("SOME AdSupport", "Loading new interstitual");
+            }
+        };
+        activity.getHandler().postDelayed(r,
+                /*activity.getResources().getInteger(R.integer.smaato_interstitial_reload_delay)*/ 20);
     }
 
-    @SuppressWarnings("EmptyMethod")
-    public void loadInterstitial(){
-        //nothing to do
-        //used in Smaato version
+    //region Description:Callback methods for InterstitialListener
+    @Override
+    public void onReadyToShow(){
+        Log.i("SOMA AdSupport", "Interstitual ready to show");
+    }
+
+    @Override
+    public void onWillShow(){
+        //Rejoice!
+    }
+
+    @Override
+    public void onFailedToLoadAd(){
+        Log.i("SOMA AdSupport", "Interstitual failed to load");
+        interBannerLoad();
+    }
+
+    @Override
+    public void onWillClose(){
+        interBannerLoad();
+    }
+
+    @Override
+    public void onWillOpenLandingPage(){
+        //$$!
     }
     //endregion
 
 
+    private void setupSmaato(){
+
+        BannerView bv = activity.findViewById(R.id.ad_container);
+        bv.setAutoReloadEnabled(true);
+        bv.setAutoReloadFrequency(activity.getResources().getInteger(R.integer.smaato_reload_delay));
+        bv.getAdSettings().setPublisherId(activity.getResources().getInteger(R.integer.smaato_pub_id));
+        bv.getAdSettings().setAdspaceId(activity.getResources().getInteger(R.integer.smaato_ad_id));
+        bv.getAdSettings().setAdDimension(AdDimension.DEFAULT);
+        bv.setAutoReloadEnabled(true);
+        bv.setAutoReloadFrequency(10);
+        bv.setLocationUpdateEnabled(true);
+        bv.asyncLoadNewBanner();
+    }
+
+    public void adCleanup(){
+        interstitial.destroy();
+    }
+
+    public void loadInterstitial(){
+        interstitial.asyncLoadNewBanner();
+    }
+    //endregion
 }

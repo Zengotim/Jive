@@ -1,1 +1,1 @@
-include ':app', ':mm-ad-sdk', ':android-support-multidex'
+include ':app', ':SOMAAndroid-8.1.0-release'
